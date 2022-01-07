@@ -202,11 +202,22 @@ export default class MenuBuilder {
             label: '&Open',
             accelerator: 'Ctrl+O',
             click: () => {
-              const filenames = dialog.showOpenDialog({
-                filters: [
-                  { name: 'Videos', extensions: ['mkv', 'avi', 'mp4'] },
-                ],
-              });
+              dialog
+                .showOpenDialog({
+                  filters: [
+                    { name: 'Videos', extensions: ['mkv', 'avi', 'mp4'] },
+                  ],
+                })
+                // eslint-disable-next-line promise/always-return
+                .then((result) => {
+                  // eslint-disable-next-line no-console
+                  console.log(result.filePaths);
+                })
+                .catch((err) => {
+                  // eslint-disable-next-line no-console
+                  console.log(err);
+                });
+              // this.mainWindow.loadURL(filenames[0]);
             },
           },
           {

@@ -73,6 +73,7 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
+    resizable: true,
     width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
@@ -81,6 +82,7 @@ const createWindow = async () => {
     },
   });
 
+  // This points to the renderer
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
