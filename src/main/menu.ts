@@ -210,14 +210,19 @@ export default class MenuBuilder {
                 })
                 // eslint-disable-next-line promise/always-return
                 .then((result) => {
-                  // eslint-disable-next-line no-console
-                  console.log(result.filePaths);
+                  this.mainWindow.webContents.send(
+                    'video',
+                    result.filePaths[0]
+                  );
+
+                  // this.mainWindow.webContents.executeJavaScript(
+                  //   `document.querySelector("video").src = ${result.filePaths[0]}`
+                  // );
                 })
                 .catch((err) => {
                   // eslint-disable-next-line no-console
                   console.log(err);
                 });
-              // this.mainWindow.loadURL(filenames[0]);
             },
           },
           {

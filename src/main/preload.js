@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('ipc-example', 'ping');
     },
     on(channel, func) {
-      const validChannels = ['ipc-example'];
+      const validChannels = ['ipc-example', 'video'];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.on(channel, (event, ...args) => func(...args));
@@ -21,3 +21,20 @@ contextBridge.exposeInMainWorld('electron', {
     },
   },
 });
+
+// window.addEventListener('videoContentLoaded', (s) => {
+//   const replaceSrc = (src) => {
+//     const ele = document.querySelector('video');
+//     if (ele) ele.src = src;
+//   };
+
+//   replaceSrc(s);
+// });
+// contextBridge.exposeInMainWorld('videoContentLoaded', (s) => {
+//   const replaceSrc = (src) => {
+//     const ele = document.querySelector('video');
+//     if (ele) ele.src = src;
+//   };
+
+//   replaceSrc(s);
+// });

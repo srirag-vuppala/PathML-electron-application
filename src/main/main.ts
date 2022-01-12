@@ -79,6 +79,8 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false,
+      // nodeIntegration: true,
     },
   });
 
@@ -95,6 +97,8 @@ const createWindow = async () => {
       mainWindow.show();
     }
   });
+
+
 
   mainWindow.on('closed', () => {
     mainWindow = null;
