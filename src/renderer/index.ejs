@@ -13,8 +13,7 @@
       console.log(arg);
     });
     window.electron.ipcRenderer.on('video', (arg) => {
-      console.log(arg)
-      document.querySelector("video").src = 'file://'+arg
+      if (arg) document.querySelector("video").src = 'file://'+arg
     })
 
     window.electron.ipcRenderer.myPing();
