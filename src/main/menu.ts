@@ -199,7 +199,18 @@ export default class MenuBuilder {
         label: '&File',
         submenu: [
           {
-            label: '&Open',
+            label: '&Create Project',
+            accelerator: 'Ctrl+N',
+            click: () => {
+              this.mainWindow.webContents.on('did-finish-load', () => {
+                dialog.showOpenDialog({
+                  buttonLabel: 'Choose a folder for project',
+                });
+              });
+            },
+          },
+          {
+            label: '&Open Project',
             accelerator: 'Ctrl+O',
             click: () => {
               dialog
@@ -225,11 +236,21 @@ export default class MenuBuilder {
                 });
             },
           },
+
           {
             label: '&Close',
             accelerator: 'Ctrl+W',
             click: () => {
               this.mainWindow.close();
+            },
+          },
+
+          {
+            label: '&Export Results',
+            // accelerator: 'Ctrl+N',
+            click: () => {
+              // eslint-disable-next-line no-console
+              console.log('export results');
             },
           },
         ],

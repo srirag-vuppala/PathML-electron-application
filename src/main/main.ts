@@ -98,8 +98,6 @@ const createWindow = async () => {
     }
   });
 
-
-
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
