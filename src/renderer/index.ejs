@@ -16,6 +16,19 @@
       if (arg) document.querySelector("video").src = 'file://'+arg
     })
 
+    window.electron.ipcRenderer.on('modal', (arg) => {
+      if (arg === 'true') {
+        document.getElementById("modal").style.display = "block"
+        document.getElementById("home").style.display = "none"
+      }
+      if (arg === 'false') {
+        document.getElementById("modal").style.display = "none"
+        document.getElementById("home").style.display = "block"
+      }
+    })
+
+
+
     window.electron.ipcRenderer.myPing();
   </script>
 </html>

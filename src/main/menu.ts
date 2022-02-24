@@ -202,11 +202,7 @@ export default class MenuBuilder {
             label: '&Create Project',
             accelerator: 'Ctrl+N',
             click: () => {
-              this.mainWindow.webContents.on('did-finish-load', () => {
-                dialog.showOpenDialog({
-                  buttonLabel: 'Choose a folder for project',
-                });
-              });
+              this.mainWindow.webContents.send('modal', 'true');
             },
           },
           {
@@ -221,6 +217,10 @@ export default class MenuBuilder {
                 })
                 // eslint-disable-next-line promise/always-return
                 .then((result) => {
+                  // this.mainWindow.webContents.send(
+                  //   'electron-store-set',
+                  //   ('video1', result.filePaths[0])
+                  // );
                   this.mainWindow.webContents.send(
                     'video',
                     result.filePaths[0]
@@ -234,6 +234,12 @@ export default class MenuBuilder {
                   // eslint-disable-next-line no-console
                   console.log(err);
                 });
+            },
+          },
+          {
+            label: '&Close Project',
+            click: () => {
+              this.mainWindow.webContents.send('modal', 'false');
             },
           },
 
