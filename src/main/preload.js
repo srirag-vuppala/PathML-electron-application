@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('ipc-example', 'ping');
     },
     on(channel, func) {
-      const validChannels = ['ipc-example', 'video', 'modal'];
+      const validChannels = ['ipc-example', 'video', 'modal', 'create-project'];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.on(channel, (event, ...args) => func(...args));
@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.once(channel, (event, ...args) => func(...args));
       }
     },
+    createProject(message) {
+      ipcRenderer.send('create-project', message);
+    },
   },
   store: {
     get(val) {
@@ -29,6 +32,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
   },
 });
+
+// window.ipcRenderer = require('electron').ipcRenderer;
+window.require = require;
 
 // window.addEventListener('videoContentLoaded', (s) => {
 //   const replaceSrc = (src) => {

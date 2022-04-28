@@ -184,7 +184,9 @@ const ProjectManagement = () => {
           </div>
         </div>
         <div className="flex space-around gap-5">
-          <button type="button">Run all</button>
+          <button type="button">
+            <Link to="/postanalysis">Run all </Link>
+          </button>
           <button type="button">Settings</button>
           <button type="button">
             <Link to="/">Home</Link>

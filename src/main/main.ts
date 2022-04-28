@@ -15,8 +15,18 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
+import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+// import { Worker } from 'snowflake-uuid';
+const { Worker } = require('snowflake-uuid');
+
+const generator = new Worker(0, 1, {
+  workerIdBits: 5,
+  datacenterIdBits: 5,
+  sequenceBits: 12,
+});
 
 const store = new Store();
 
@@ -81,8 +91,10 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.resolve(path.join(__dirname, 'preload.js')),
       webSecurity: false,
+      nodeIntegration: true,
+      contextIsolation: true,
       // nodeIntegration: true,
     },
   });
@@ -119,12 +131,39 @@ const createWindow = async () => {
   new AppUpdater();
 };
 
+interface SchemifyProjectStateProps {
+  name: string;
+  description: string;
+  projectPath: string;
+}
+
+function SchemifyProjectState(obj: SchemifyProjectStateProps) {
+  return {
+    id: generator.nextId().toString(),
+    name: obj.name,
+    description: obj.description,
+    pathurl: obj.projectPath,
+  };
+}
+
 // IPC Listener
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = store.get(val);
 });
 ipcMain.on('electron-store-set', async (event, key, val) => {
   store.set(key, val);
+});
+
+ipcMain.on('create-project', async (event, strval) => {
+  const val = JSON.parse(strval);
+  const projectPath = path.join(app.getPath('userData'), val.name);
+  const data = SchemifyProjectState({ projectPath, ...val });
+
+  if (!fs.existsSync(projectPath)) {
+    fs.mkdirSync(projectPath);
+    fs.writeFileSync(path.join(projectPath, 'data'), JSON.stringify(data));
+    event.returnValue = 'success';
+  }
 });
 
 /**
@@ -150,3 +189,5 @@ app
     });
   })
   .catch(console.log);
+
+console.log(app.getPath('userData'));

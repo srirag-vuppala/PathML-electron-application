@@ -3,7 +3,9 @@ import React from 'react';
 import { MemoryRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import 'tailwindcss/tailwind.css';
 import './App.css';
+// import { IpcRenderer } from 'electron';
 import DuringAnalysis from './DuringAnalysis';
+import PostAnalysis from './PostAnalysis';
 import ProjectManagement from './ProjectManagement';
 import ProjectSetup from './ProjectSetup';
 
@@ -16,7 +18,16 @@ declare global {
         onDidChange: (key: string, callback: any) => void;
         // any other methods you've defined...
       };
+      ipcRenderer: {
+        createProject: (message: string) => void;
+      };
     };
+    // ipcRenderer: {
+    //   send: (channel: string, data: any) => void;
+    // };
+    // require: (module: 'electron') => {
+    //   ipcRenderer: IpcRenderer;
+    // };
   }
 }
 
@@ -113,6 +124,7 @@ export default function App() {
         <Route path="/projectsetup" element={<ProjectSetup />} />
         <Route path="/projectmanagement" element={<ProjectManagement />} />
         <Route path="/duringanalysis" element={<DuringAnalysis />} />
+        <Route path="/postanalysis" element={<PostAnalysis />} />
       </Routes>
     </Router>
   );
