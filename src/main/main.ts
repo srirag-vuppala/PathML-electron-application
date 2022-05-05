@@ -162,7 +162,6 @@ ipcMain.on('create-project', async (event, strval) => {
   if (!fs.existsSync(projectPath)) {
     fs.mkdirSync(projectPath);
     fs.writeFileSync(path.join(projectPath, 'project.json'), JSON.stringify(data));
-    console.log(projectPath)
     event.returnValue = 'success';
   }
 });
