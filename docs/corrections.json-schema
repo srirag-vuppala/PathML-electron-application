@@ -1,0 +1,34 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/pathml/taxonony.schema.json",
+
+    "title": "Corrections",
+    "description": "append-only csv datatable-compatible format that is stored as json-lines",
+
+    "type": "array",
+    "format": "jsonlines",
+    "items": {
+        "user": {
+            "description": "name of analyst who submitted this correction",
+            "type": "string",
+        },
+        "start": {
+            "type": "number",
+            "unit": "seconds"
+        },
+        "end": {
+            "Description": "end time of the correction (exclusive)",
+            "type": "number",
+            "unit": "seconds"
+        },
+        "correction": {
+            "description": "output-form taxonomy verb that the time range should be corrected to",
+            "type": "string",
+        }
+    },
+    "required": ["user", "start", "end", "correction"],
+    "example": [
+        {"user": "A", "start": 14, "end": 17, "correction": "standing"},
+        {"user": "A", "start": 24, "end": 27, "correction": "sitting"},
+    ]
+}

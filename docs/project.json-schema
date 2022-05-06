@@ -1,0 +1,288 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://example.com/pathml/project.schema.json",
+ 
+ "title": "Project",
+ "description": "Represents the key entry point for working with a Project in the PathML app; contains metadata about the project, as well as where all its constituent data files are",
+ "type": "object",
+ "required": ["id, name"],
+ 
+ "properties": {
+   "id": {
+     "description": "programmatic identifier of the project",
+     "type": "string",
+     "format": "snowflake",
+     "const": true
+   },
+   "name": {
+     "description": "idiomatic identifier of the project, shown to the user",
+     "type": "string",
+     "example": "My Awesome Project"
+   },
+   "path": {
+     "description": "location of project in user's filesystem",
+     "type": "string",
+     "format": "uri"
+   },
+   "taxonomies": {
+     "description": "versioned taxonomies for the project as well as the remaps",
+     "type": "array",
+     "items": {
+       "type": "object",
+       "properties": {
+         "id": {
+           "description": "programmatic identifier to this taxonomy + remap pair",
+           "type": "string",
+           "format": "snowflake"
+         },
+         "name": {
+           "description": "idiomatic identifier",
+           "type": "string"
+         },
+         "uri": {
+           "description": "location of the taxonomy's JSON definition",
+           "type": "string",
+           "format": "uri"
+         },
+         "remap": {
+           "description": "array of user-level taxonomy redefinitions",
+           "type": "array",
+           "optional": true,
+           "properties": {
+             "from": {
+               "description": "predicted class from annotations created by the ML pipeline",
+               "type": "string",
+               "unique": true
+             },
+             "to": {
+               "description": "the class to display/output to the user",
+               "type": "string"
+             }
+           },
+           "required": ["from", "to"]
+         }
+       }
+     },
+     "required": ["id", "name", "uri"]
+   },
+   "videos": {
+     "description": "videos added to the project for annotation and correction",
+     "type": "array",
+     "items": {
+       "type": "object",
+       "properties": {
+         "id": {
+           "description": "programmatic identifier",
+           "type": "string",
+           "format": "snowflake"
+         },
+         "name": {
+           "description": "idiomatic identifier for display",
+           "type": "string"
+         },
+         "uri": {
+           "description": "location of the file on the computer",
+           "type": "string",
+           "format": "uri"
+         },
+         "duration": {
+           "description": "length of the video",
+           "type": "number",
+           "unit": "seconds",
+           "inclusiveMinimum": 0
+         },
+         "fps": {
+           "description": "average frames per second in the source video",
+           "type": "float"
+         },
+         "dimensions": {
+           "description": "fidelity of the video",
+           "type": "string",
+           "format": "{width}x{height}"
+         },
+         "private_keypoints": {
+           "description": "array of video segments that should not be output for analysis due to privacy concerns, private content, or bad recording data; inclusive:exclusive range",
+           "type": "array",
+           "items": {
+             "type": "object",
+             "properties": {
+               "start": {
+                 "type": "number",
+                 "unit": "seconds",
+                 "inclusiveMinimum": 0
+               },
+               "stop": {
+                 "type": "number",
+                 "unit": "seconds",
+                 "exclusiveMinimum": "$ref#this.start"
+               }
+             },
+             "required": ["start", "stop"]
+           },
+           "example": [
+             { "start": 10, "end": 42 },
+             { "start": 812, "end": 841 }
+           ]
+         },
+         "analysis_fps": {
+           "description": "the amount of frames to analyze per second of video; = 1 means the first frame of each second. > 1 takes multiple frames a second. < 1 skips seconds",
+           "type": "number",
+           "exclusiveMinimum": 0,
+           "default": 1
+         },
+         "description": {
+           "description": "user-managed notes about the video",
+           "type": "string",
+           "format": "markdown"
+         }
+       },
+       "required": ["id", "name", "uri", "duration", "fps"]
+     }
+   },
+   "models": {
+     "description": "model-taxonomy pairs for starting annotation jobs",
+     "type": "array",
+     "items": {
+       "type": "object",
+       "properties": {
+         "id": {
+           "description": "programmatic identifier",
+           "type": "string",
+           "format": "snowflake",
+           "const": true
+         },
+         "version": {
+           "type": "integer",
+           "const": true,
+           "exclusiveMinimum": 0
+         },
+         "revision": {
+           "description": "models that are logically identical version-to-version but have been edited in some other way (for example a more sensitive or more specific model vs a balanced model)",
+           "type": "integer",
+           "const": true,
+           "exclusiveMinimum": 0
+         },
+         "name": {
+           "description": "idiomatic identifier; provided by developers",
+           "type": "string",
+           "const": true
+         },
+         "uri": {
+           "description": "where to send RPC calls (remote or local inference servers); if necessary, authentication should be embedded in the URI as parameters",
+           "type": "string",
+           "format": "uri"
+         },
+         "taxonomy": {
+           "description": "reference to a taxonomy-remap in the project",
+           "type": "string",
+           "format": "$ref#taxonomy.id"
+         },
+         "preprocessing": {
+           "description": "programmatic reference to a routine/pipeline to run on the data to prepare it for consumption by the pipeline",
+           "type": "string"
+         },
+         "postprocessing": {
+           "description": "programming reference to a routine/pipeline to run on the data after predictions have been generated",
+           "type": "string"
+         }
+       },
+       "required": ["id", "version", "revision", "name", "uri", "taxonomy"]
+     }
+   }
+ },
+ "jobs": {
+   "description": "pending video+model+taxonomy task triplets that the user wants executed",
+   "type": "array",
+   "items": {
+     "type": "object",
+     "properties": {
+       "id": {
+         "description": "programming identifier",
+         "type": "string",
+         "format": "snowflake"
+       },
+       "model": {
+         "type": "string",
+         "format": "$ref#model.id"
+       },
+       "taxonomy": {
+         "type": "string",
+         "format": "$ref#taxonomy.id"
+       },
+       "video": {
+         "type": "string",
+         "format": "$ref#video.id"
+       },
+       "analysis_start": {
+         "description": "the point in the video begin running automatic annotation",
+         "type": "integer",
+         "inclusiveMinimum": "0",
+         "unit": "seconds"
+       },
+       "analysis_end": {
+         "description": "the point in the video stop the annotations",
+         "type": "integer",
+         "exclusiveMinimum": "#ref$analysis_start",
+         "unit": "seconds"
+       },
+       "status": {
+         "description": "enum? Or friendly description?",
+         "enum": ["completed", "in_progress", "not_started"],
+         "type": "string"
+       }
+     }
+   },
+   "analyses": {
+     "description": "metadata for completed analyses and their data locations",
+     "type": "array",
+     "items": {
+       "type": "object",
+       "properties": {
+         "numberOfPossibleAnalyses": {
+             "description": "Indicates the total number of possible 'merged' analyses that combines model and taxonomy pairs",
+             "type": "integer",
+             "exclusiveMinimum": 0
+         },
+         "preds": {
+           "description": "file location of the raw prediction datatable",
+           "type": "string",
+           "format": "uri"
+         },
+         "prettypreds": {
+           "description": "file location of the post-processed and user-facing datatable",
+           "type": "string",
+           "format": "uri"
+         },
+         "corrections": {
+           "description": "file location of analyst corrections for the automated analysis",
+           "type": "string",
+           "format": "uri"
+         },
+         "analysis_started": {
+           "description": "time the job started",
+           "type": "string",
+           "format": "datetime-ISO8601"
+         },
+         "analysis_complete": {
+           "description": "time the job completed",
+           "type": "string",
+           "format": "datetime-ISO8601"
+         },
+         "model": {
+           "type": "string",
+           "format": "$ref#model.id"
+         },
+         "taxonomy": {
+           "type": "string",
+           "format": "$ref#taxonomy.id"
+         },
+         "video": {
+           "type": "string",
+           "format": "$ref#video.id"
+         }
+       }
+     }
+   }
+ }
+}
+

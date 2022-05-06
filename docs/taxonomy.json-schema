@@ -1,0 +1,65 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/pathml/taxonony.schema.json",
+
+    "title": "Taxonomy",
+    "description": "the words used to describe human action found in videos; different projects care about different actions and use different words to describe those actions.",
+
+    "properties": {
+        "id": {
+            "description": "programmatic identifier of the taxonomy",
+            "type": "string",
+            "format": "snowflake",
+            "const": true
+        },
+        "version": {
+            "type": "integer",
+            "const": true,
+            "exclusiveMinimum": 0
+        },
+        "revision": {
+            "description": "used for taxonomies that are logically identical version-to-version but have been edited in some other way",
+            "type": "integer",
+            "const": true,
+            "exclusiveMinimum": 0
+        },
+        "uri": {
+            "description": "location where the taxonomy was downloaded from, can be used to check for updated taxonomies",
+            "type": "string",
+            "format": "uri"
+        },
+        "name": {
+            "description": "idiomatic identifier of the taxonomy, shown to the user",
+            "type": "string",
+            "example": "Sitting and Standing"
+        },
+        "description": {
+            "type": "string",
+            "example": "2-class taxonomy from the US BLS determining sitting vs standing while at the workplace"
+        },
+        "citation": {
+            "description": "citation of where the taxonomy was developed from",
+            "type": "string",
+            "format": "APA",
+            "example": "Occupational Requirements Survey (2021, November 18). Sitting and Standing. US Bureau of Labor Statistics. https://www.bls.gov/ors/factsheet/pdf/sit-and-stand.pdf"
+        },
+        "classes": {
+            "description": "mapping of raw output prediction columns to classes",
+            "type": "array",
+            "items": {
+                "type": "object",
+                 "properties": {
+                 "label": {
+                     "type": "string",
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+               "required": ["label"]
+            },
+            "example": [{"label": "sitting"}, {"label": "standing", "description": "blah"}]
+        }
+    },
+    "required": ["id", "version", "revision", "name", "description", "classes"]
+}
